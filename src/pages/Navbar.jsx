@@ -30,16 +30,48 @@ function Navbar() {
         <div className="container-fluid">
           <Logo to="/" className="navbar-brand" onClick={cerrarMenu}>Blanqueria</Logo>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            aria-controls="navbarContent"
-            aria-expanded={menuAbierto}
-            aria-label="Toggle navigation"
-            onClick={() => setMenuAbierto((prev) => !prev)}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+          <div className="d-flex align-items-center ms-auto gap-3">
+            <SeccionUsuario className="d-flex align-items-center gap-3">
+              {isAuthenticated ? (
+                <ContenedorUsuario className="d-flex align-items-center gap-3">
+                  <Bienvenida>Hola, {usuario.nombre}</Bienvenida>
+
+                  {usuario.nombre === "admin" && (
+                    <NavLinkAdmin to="/dashboard" className="nav-link" onClick={cerrarMenu}>Dashboard</NavLinkAdmin>
+                  )}
+
+                  <BotonCerrarSesion onClick={manejarCerrarSesion} className="btn btn-outline-light btn-sm">
+                    Cerrar Sesión
+                  </BotonCerrarSesion>
+                </ContenedorUsuario>
+              ) : (
+                <NavLink to="/iniciar-sesion" className="nav-link" onClick={cerrarMenu}>Iniciar Sesión</NavLink>
+              )}
+
+              <ContenedorCarrito>
+                <IconoCarrito to="/pagar" className="nav-link d-flex align-items-center" onClick={cerrarMenu}>
+                  <span className="me-1">Carrito</span>
+                  <FaShoppingCart />
+                  {totalItemsCarrito > 0 && (
+                    <ContadorCarrito>
+                      {totalItemsCarrito}
+                    </ContadorCarrito>
+                  )}
+                </IconoCarrito>
+              </ContenedorCarrito>
+            </SeccionUsuario>
+
+            <button
+              className="navbar-toggler"
+              type="button"
+              aria-controls="navbarContent"
+              aria-expanded={menuAbierto}
+              aria-label="Toggle navigation"
+              onClick={() => setMenuAbierto((prev) => !prev)}
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+          </div>
 
           <div className={`collapse navbar-collapse ${menuAbierto ? 'show' : ''}`} id="navbarContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -58,36 +90,6 @@ function Navbar() {
                 </li>
               )}
             </ul>
-
-            <SeccionUsuario className="d-flex align-items-center gap-3">
-              <ContenedorCarrito>
-                <IconoCarrito to="/pagar" className="nav-link d-flex align-items-center" onClick={cerrarMenu}>
-                  <span className="me-1">Carrito</span>
-                  <FaShoppingCart />
-                  {totalItemsCarrito > 0 && (
-                    <ContadorCarrito>
-                      {totalItemsCarrito}
-                    </ContadorCarrito>
-                  )}
-                </IconoCarrito>
-              </ContenedorCarrito>
-
-              {isAuthenticated ? (
-                <ContenedorUsuario className="d-flex align-items-center gap-3">
-                  <Bienvenida>Hola, {usuario.nombre}</Bienvenida>
-
-                  {usuario.nombre === "admin" && (
-                    <NavLinkAdmin to="/dashboard" className="nav-link" onClick={cerrarMenu}>Dashboard</NavLinkAdmin>
-                  )}
-
-                  <BotonCerrarSesion onClick={manejarCerrarSesion} className="btn btn-outline-light btn-sm">
-                    Cerrar Sesión
-                  </BotonCerrarSesion>
-                </ContenedorUsuario>
-              ) : (
-                <NavLink to="/iniciar-sesion" className="nav-link" onClick={cerrarMenu}>Iniciar Sesión</NavLink>
-              )}
-            </SeccionUsuario>
           </div>
         </div>
       </NavbarContainer>
@@ -98,7 +100,7 @@ function Navbar() {
 
 export default Navbar;
 
-// Styled Components actualizados
+// Styled Components
 const NavbarContainer = styled.nav`
   background-color: #8c8d8bff !important;
   padding: 0.5rem 1rem;
