@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from '../context/AuthContext';
 import { useCartContext } from '../context/CartContext';
 
+const NUMERO_WHATSAPP = "5491163743346"; // Número en formato internacional sin signos ni espacios
 
 export default function Pagar() {
   const { usuario, cerrarSesion } = useAuthContext();
@@ -12,8 +13,24 @@ export default function Pagar() {
 
   // Función para finalizar compra
   const comprar = () => {
-    alert("¡Compra realizada con éxito!");
-    vaciarCarrito(); // Limpiar carrito después de comprar
+    if (!carrito.length) return;
+
+    const mensaje = [
+      "Hola, quiero confirmar mi compra:",
+      ...carrito.map((producto) => {
+        const cantidad = Number(producto.cantidad || 1);
+        const precio = Number(producto.precio || 0);
+        return `- ${producto.nombre} x${cantidad} - $${(cantidad * precio).toFixed(3)}`;
+      }),
+      "",
+      `Total: $${Number(total).toFixed(3)}`,
+      `Cliente: ${usuario?.nombre || "Cliente"}`,
+    ].join("\n");
+
+    const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(urlWhatsApp, "_blank");
+    vaciarCarrito();
     navigate("/productos");
   };
 
@@ -102,7 +119,7 @@ export default function Pagar() {
               </button>
             </div>
             <p className="payment-info">
-              <i className="info-icon">ℹ️</i> Al confirmar, serás redirigido a nuestro procesador de pagos seguro.
+              <i className="info-icon">ℹ️</i> Al confirmar, se abrirá WhatsApp para coordinar la compra y el pago.
             </p>
           </>
         ) : (

@@ -9,10 +9,12 @@ function Navbar() {
   const { usuario, isAuthenticated, cerrarSesion } = useAuthContext();
   const { vaciarCarrito, carrito } = useCartContext();
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = React.useState(false);
 
   const totalItemsCarrito = carrito.reduce((total, item) => total + item.cantidad, 0);
 
   const manejarCerrarSesion = () => {
+    setMenuAbierto(false);
     navigate("/productos");
     setTimeout(() => {
       vaciarCarrito();
@@ -20,47 +22,48 @@ function Navbar() {
     }, 100);
   };
 
+  const cerrarMenu = () => setMenuAbierto(false);
+
   return (
     <>
       <NavbarContainer className="navbar navbar-expand-lg navbar-dark fixed-top">
         <div className="container-fluid">
-          <Logo to="/" className="navbar-brand">Blanqueria</Logo>
-          
-          <button 
-            className="navbar-toggler" 
-            type="button" 
-            data-bs-toggle="collapse" 
-            data-bs-target="#navbarContent"
-            aria-controls="navbarContent" 
-            aria-expanded="false" 
+          <Logo to="/" className="navbar-brand" onClick={cerrarMenu}>Blanqueria</Logo>
+
+          <button
+            className="navbar-toggler"
+            type="button"
+            aria-controls="navbarContent"
+            aria-expanded={menuAbierto}
             aria-label="Toggle navigation"
+            onClick={() => setMenuAbierto((prev) => !prev)}
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarContent">
+          <div className={`collapse navbar-collapse ${menuAbierto ? 'show' : ''}`} id="navbarContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <NavLink to="/" className="nav-link">Inicio</NavLink>
+                <NavLink to="/" className="nav-link" onClick={cerrarMenu}>Inicio</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/servicios" className="nav-link">Nosotros</NavLink>
+                <NavLink to="/servicios" className="nav-link" onClick={cerrarMenu}>Nosotros</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/productos" className="nav-link">Productos</NavLink>
+                <NavLink to="/productos" className="nav-link" onClick={cerrarMenu}>Productos</NavLink>
               </li>
               {usuario?.nombre === "admin" && (
                 <li className="nav-item">
-                  <NavLink to="/formulario-producto" className="nav-link">Agregar Producto</NavLink>
+                  <NavLink to="/formulario-producto" className="nav-link" onClick={cerrarMenu}>Agregar Producto</NavLink>
                 </li>
               )}
             </ul>
 
             <SeccionUsuario className="d-flex align-items-center gap-3">
-              <ContenedorCarrito> 
-                <IconoCarrito to="/pagar" className="nav-link d-flex align-items-center">
+              <ContenedorCarrito>
+                <IconoCarrito to="/pagar" className="nav-link d-flex align-items-center" onClick={cerrarMenu}>
                   <span className="me-1">Carrito</span>
-                  <FaShoppingCart />  
+                  <FaShoppingCart />
                   {totalItemsCarrito > 0 && (
                     <ContadorCarrito>
                       {totalItemsCarrito}
@@ -72,17 +75,17 @@ function Navbar() {
               {isAuthenticated ? (
                 <ContenedorUsuario className="d-flex align-items-center gap-3">
                   <Bienvenida>Hola, {usuario.nombre}</Bienvenida>
-                 
+
                   {usuario.nombre === "admin" && (
-                    <NavLinkAdmin to="/dashboard" className="nav-link">Dashboard</NavLinkAdmin>
+                    <NavLinkAdmin to="/dashboard" className="nav-link" onClick={cerrarMenu}>Dashboard</NavLinkAdmin>
                   )}
-                 
+
                   <BotonCerrarSesion onClick={manejarCerrarSesion} className="btn btn-outline-light btn-sm">
                     Cerrar Sesión
                   </BotonCerrarSesion>
                 </ContenedorUsuario>
               ) : (
-                <NavLink to="/iniciar-sesion" className="nav-link">Iniciar Sesión</NavLink>
+                <NavLink to="/iniciar-sesion" className="nav-link" onClick={cerrarMenu}>Iniciar Sesión</NavLink>
               )}
             </SeccionUsuario>
           </div>
@@ -99,6 +102,46 @@ export default Navbar;
 const NavbarContainer = styled.nav`
   background-color: #8c8d8bff !important;
   padding: 0.5rem 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1030;
+
+  .navbar-collapse {
+    transition: all 0.25s ease;
+  }
+
+  .navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 0.35rem 0.6rem;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 991.98px) {
+    .navbar-collapse {
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 0.5rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .navbar-nav {
+      width: 100%;
+      gap: 0.35rem;
+    }
+
+    .nav-item {
+      width: 100%;
+    }
+
+    .nav-link {
+      display: block;
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+    }
+  }
 `;
 
 const NavbarSpacer = styled.div`
@@ -220,8 +263,9 @@ const SeccionUsuario = styled.div`
 
   @media (max-width: 991.98px) {
     flex-direction: column;
+    align-items: stretch;
     gap: 0.5rem;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     width: 100%;
   }
 `;
@@ -233,6 +277,7 @@ const ContenedorUsuario = styled.div`
 
   @media (max-width: 991.98px) {
     flex-direction: column;
+    align-items: stretch;
     gap: 0.5rem;
     width: 100%;
   }
