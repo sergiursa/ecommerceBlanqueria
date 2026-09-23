@@ -30,8 +30,36 @@ function Navbar() {
         <div className="container-fluid">
           <Logo to="/" className="navbar-brand" onClick={cerrarMenu}>Blanqueria</Logo>
 
-          <div className="d-flex align-items-center ms-auto gap-3">
-            <SeccionUsuario className="d-flex align-items-center gap-3">
+          <button
+            className="navbar-toggler"
+            type="button"
+            aria-controls="navbarContent"
+            aria-expanded={menuAbierto}
+            aria-label="Toggle navigation"
+            onClick={() => setMenuAbierto((prev) => !prev)}
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          <div className={`collapse navbar-collapse ${menuAbierto ? 'show' : ''}`} id="navbarContent">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <NavLink to="/" className="nav-link" onClick={cerrarMenu}>Inicio</NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/servicios" className="nav-link" onClick={cerrarMenu}>Nosotros</NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/productos" className="nav-link" onClick={cerrarMenu}>Productos</NavLink>
+              </li>
+              {usuario?.nombre === "admin" && (
+                <li className="nav-item">
+                  <NavLink to="/formulario-producto" className="nav-link" onClick={cerrarMenu}>Agregar Producto</NavLink>
+                </li>
+              )}
+            </ul>
+
+            <SeccionUsuario>
               {isAuthenticated ? (
                 <ContenedorUsuario className="d-flex align-items-center gap-3">
                   <Bienvenida>Hola, {usuario.nombre}</Bienvenida>
@@ -60,36 +88,6 @@ function Navbar() {
                 </IconoCarrito>
               </ContenedorCarrito>
             </SeccionUsuario>
-
-            <button
-              className="navbar-toggler"
-              type="button"
-              aria-controls="navbarContent"
-              aria-expanded={menuAbierto}
-              aria-label="Toggle navigation"
-              onClick={() => setMenuAbierto((prev) => !prev)}
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-          </div>
-
-          <div className={`collapse navbar-collapse ${menuAbierto ? 'show' : ''}`} id="navbarContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <NavLink to="/" className="nav-link" onClick={cerrarMenu}>Inicio</NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/servicios" className="nav-link" onClick={cerrarMenu}>Nosotros</NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/productos" className="nav-link" onClick={cerrarMenu}>Productos</NavLink>
-              </li>
-              {usuario?.nombre === "admin" && (
-                <li className="nav-item">
-                  <NavLink to="/formulario-producto" className="nav-link" onClick={cerrarMenu}>Agregar Producto</NavLink>
-                </li>
-              )}
-            </ul>
           </div>
         </div>
       </NavbarContainer>
@@ -111,6 +109,13 @@ const NavbarContainer = styled.nav`
     transition: all 0.25s ease;
   }
 
+  @media (min-width: 992px) {
+    .navbar-collapse {
+      display: flex !important;
+      align-items: center;
+    }
+  }
+
   .navbar-toggler {
     border: 1px solid rgba(255, 255, 255, 0.8);
     padding: 0.35rem 0.6rem;
@@ -126,6 +131,12 @@ const NavbarContainer = styled.nav`
       margin-top: 0.75rem;
       padding: 0.5rem 0;
       border-top: 1px solid rgba(255, 255, 255, 0.2);
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .navbar-collapse.show {
+      display: flex !important;
     }
 
     .navbar-nav {
@@ -142,6 +153,10 @@ const NavbarContainer = styled.nav`
       width: 100%;
       padding: 0.7rem 0.9rem;
       border-radius: 8px;
+    }
+
+    .navbar-nav {
+      margin-right: 0 !important;
     }
   }
 `;
@@ -267,7 +282,7 @@ const SeccionUsuario = styled.div`
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     width: 100%;
   }
 `;
